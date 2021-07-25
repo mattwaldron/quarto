@@ -68,7 +68,7 @@ export class QPiece extends QInteractive {
                 if (child instanceof THREE.Mesh) {
                     child.material.color.setHex(QPiece.lookupColor(c));
                     child.material.emissive.setHex(QPiece.lookupColor(c));
-                    child.material.emissiveIntensity = 0;
+                    child.material.emissiveIntensity = 0.3;
                 }
             });
         }

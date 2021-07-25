@@ -26,8 +26,8 @@ export class QSquare extends QInteractive {
             }
             var material = new THREE.MeshBasicMaterial( { color: color } );
             this.model = new THREE.Mesh(geometry, material);
-            this.model.position.x = x*QSquare.squareSize;
-            this.model.position.z = y*QSquare.squareSize;
+            this.model.position.x = (x-1.5)*QSquare.squareSize;
+            this.model.position.z = (y-1.5)*QSquare.squareSize;
             this.model.userData.qinteractive = this;
             QSquare.scene.add(this.model);
         }
