@@ -107,8 +107,7 @@ function init() {
     initPieces();
     initBoard();
 
-    const axesHelper = new THREE.AxesHelper( 10 );
-    scene.add( axesHelper );
+    // const axesHelper = new THREE.AxesHelper( 10 );  scene.add( axesHelper );
 
     raycaster = new THREE.Raycaster();
 
