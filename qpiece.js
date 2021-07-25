@@ -1,3 +1,4 @@
+import {QInteractive} from './qinteractive.js';
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 import {OBJLoader} from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/OBJLoader.js'
 
@@ -6,7 +7,7 @@ export const QShape = { ROUND: "round", SQUARE: "square" }
 export const QDensity = { HOLLOW: "hollow", SOLID: "solid" }
 export const QColor = { DARK: "dark", LIGHT: "light" }
 
-export class QPiece {
+export class QPiece extends QInteractive {
 
     static lookupModel(h, s, d) {
         return h + '_' + s + '_' + d + '.obj';
@@ -22,21 +23,35 @@ export class QPiece {
 
     static objLoader = new OBJLoader();
     static scene = null;
+    static clickCallback = null;
+
+    _pieceDescriptor() {
+        return this.height.charAt(0) + this.shape.charAt(0) + this.density.charAt(0) + this.color.charAt(0);
+    }
+
     constructor(h, s, d, c, x, y) {
+        super();
+        this.height = h;
+        this.shape = s;
+        this.density = d;
+        this.color = c;
+        this.id = this._pieceDescriptor();
         if (QPiece.scene != null) {
             var objFilePath = 'models/' + QPiece.lookupModel(h, s, d);
-            this.height = h;
-            this.shape = s;
-            this.density = d;
-            this.color = c;
             this.model = null;
             QPiece.objLoader.load(objFilePath, (obj) => {
                 this.model = obj;
-                this.model.userData.qpiece = this;
+                this.model.userData.qinteractive = this;
                 this.setColor(c);
                 this.setPosition(x, y);
                 QPiece.scene.add (obj);
             });
+        }
+    }
+
+    onClick() {
+        if (QPiece.clickCallback != null) {
+            QPiece.clickCallback(this);
         }
     }
 
@@ -45,8 +60,8 @@ export class QPiece {
             this.model.traverse ( (child) => {
                 if (child instanceof THREE.Mesh) {
                     child.material.color.setHex(QPiece.lookupColor(c));
+                    child.material.emissive.setHex(QPiece.lookupColor(c));
                     child.material.emissiveIntensity = 0;
-                    //child.material.emissive.setHex(QPiece.lookupColor(c));
                 }
             });
         }
@@ -70,10 +85,6 @@ export class QPiece {
         if (this.model != null) {
             this.model.rotation.y += r;
         }
-    }
-
-    get id() {
-        return this.height.charAt(0) + this.shape.charAt(0) + this.density.charAt(0) + this.color.charAt(0);
     }
 
     get position() {

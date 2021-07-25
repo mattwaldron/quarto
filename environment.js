@@ -44,6 +44,9 @@ function adjustLightPosition () {
 
 function initPieces() {
     QPiece.scene = scene;
+    QPiece.clickCallback = ((qp) => {
+        messageBar.innerText = "saw click on " + qp.id;
+    });
 
     var x = 0;
     var y = 0;
@@ -73,8 +76,6 @@ function initCamera() {
 function init() {
     container = document.createElement( 'div' );
     document.body.appendChild( container );
-
-    
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xf0f0f0 );
@@ -134,7 +135,7 @@ function render() {
         const intersects = raycaster.intersectObjects( scene.children, true );
 
         if ( intersects.length > 0 ) {
-            messageBar.innerText = "saw click on " + intersects[0].object.parent.userData.qpiece.id;
+            intersects[0].object.parent.userData.qinteractive.onClick();
         }
         newClick = false;
     }
