@@ -35,13 +35,20 @@ export class QPiece extends QInteractive {
         this.shape = s;
         this.density = d;
         this.color = c;
+        this.played = false;
         this.id = this._pieceDescriptor();
         if (QPiece.scene != null) {
             var objFilePath = 'models/' + QPiece.lookupModel(h, s, d);
             this.model = null;
             QPiece.objLoader.load(objFilePath, (obj) => {
                 this.model = obj;
-                this.model.userData.qinteractive = this;
+                if (this.model != null) {
+                    this.model.traverse ( (child) => {
+                        if (child instanceof THREE.Mesh) {
+                            child.userData.qinteractive = this;
+                        }
+                    });
+                }
                 this.setColor(c);
                 this.setPosition(x, y);
                 QPiece.scene.add (obj);

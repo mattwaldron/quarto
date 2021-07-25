@@ -1,21 +1,25 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 // import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js';
 
-import {QPiece, QColor, QDensity, QHeight, QShape} from './qpiece.js'
+import {QPiece, QColor, QDensity, QHeight, QShape} from './qpiece.js';
+import {QBoard} from './qboard.js';
+import {QSquare} from './qsquare.js';
 
 const frustumSize = 48;
 const pieceSpacing = 7;
-const lightHeight = 12;
+const lightHeight = 16;
+const squareSize = 5;
 const messageBarHeight = 50;
 
 let container, messageBar;
 let camera, scene, raycaster, renderer;
+let gameBoard;
 
 let newClick = false;
 let lightg, lightr, lightb;
 let lightAngle = 0;
-let lightCenter = pieceSpacing * 1.5;
-let lightRadius = pieceSpacing * 3;
+let lightCenter = squareSize * 2;
+let lightRadius = squareSize * 3;
 let pointer = new THREE.Vector2();
 
 function initLights() {
@@ -48,20 +52,31 @@ function initPieces() {
         messageBar.innerText = "saw click on " + qp.id;
     });
 
-    var x = 0;
-    var y = 0;
+    var boardCenter = squareSize*1.5;
+    var pRadius = squareSize*3.5;
+    var pCount = 0;
+    var pStep = 5;
     for (var h in QHeight) {
         for (var s in QShape) {
-            x = 0;
             for (var d in QDensity) {
                 for (var c in QColor) {
+                    var x = boardCenter + pRadius*Math.cos(2*Math.PI*pCount*pStep/16);
+                    var y = boardCenter + pRadius*Math.sin(2*Math.PI*pCount*pStep/16);
                     new QPiece(QHeight[h], QShape[s], QDensity[d], QColor[c], x, y);
-                    x += pieceSpacing;
+                    pCount += 1;
                 }
             }
-            y += pieceSpacing;
         }
     }
+}
+
+function initBoard() {
+    QSquare.scene = scene;
+    QSquare.squareSize = squareSize;
+    QSquare.clickCallback = ((qs) => {
+        messageBar.innerText = "saw click on " + qs.id;
+    });
+    gameBoard = new QBoard();
 }
 
 function initCamera() {
@@ -69,7 +84,7 @@ function initCamera() {
 
     camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 );
     camera.position.x = 6*pieceSpacing;
-    camera.position.y = 32;
+    camera.position.y = 64;
     camera.position.z = 6*pieceSpacing;
 }
 
@@ -83,6 +98,7 @@ function init() {
     initCamera();
     initLights();
     initPieces();
+    initBoard();
 
     raycaster = new THREE.Raycaster();
 
@@ -108,7 +124,7 @@ function onWindowResize() {
     camera.top = frustumSize / 2;
     camera.bottom = - frustumSize / 2;
     camera.near = 0;
-    camera.far = 72;
+    camera.far = 96;
 
     camera.updateProjectionMatrix();
 
@@ -135,7 +151,7 @@ function render() {
         const intersects = raycaster.intersectObjects( scene.children, true );
 
         if ( intersects.length > 0 ) {
-            intersects[0].object.parent.userData.qinteractive.onClick();
+            intersects[0].object.userData.qinteractive.onClick();
         }
         newClick = false;
     }
