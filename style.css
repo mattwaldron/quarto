@@ -1,0 +1,38 @@
+#box {
+  margin: auto;
+  width: 50%;
+  height:200px;
+  border: 3px solid green;
+  padding: 10px;
+}
+#box1, #box2, #box3 {
+  float: left;
+  margin: 5px;
+  padding: 10px;
+}
+#box1 {
+  width: 50px;
+  height: 50px;
+  background-color: #F5B5C5;
+}
+#box2 {
+  width: 100px;
+  height: 100px;
+  background-color: #B5D5F5;
+}
+#box3 {
+  width: 150px;
+  height: 150px;
+  background-color: #BEA7CC;
+}
+p {
+  font-size:20px;
+  font-weight:bold;
+  text-align:center;
+}
+.gfg {
+  font-size:40px;
+  color:#009900;
+  font-weight:bold;
+  text-align:center;
+}
