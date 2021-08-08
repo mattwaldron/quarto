@@ -31,12 +31,13 @@ export class QPiece extends QInteractive {
 
     constructor(h, s, d, c, x, y) {
         super();
+        super.type = "piece";
         this.height = h;
         this.shape = s;
         this.density = d;
         this.color = c;
         this.played = false;
-        this.id = this._pieceDescriptor();
+        super.id = this._pieceDescriptor();
         if (QPiece.scene != null) {
             var objFilePath = 'models/' + QPiece.lookupModel(h, s, d);
             this.model = null;
@@ -92,6 +93,10 @@ export class QPiece extends QInteractive {
         if (this.model != null) {
             this.model.rotation.y += r;
         }
+    }
+
+    remove() {
+        QPiece.scene.remove(this.model);
     }
 
     get position() {

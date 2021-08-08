@@ -1,12 +1,12 @@
 import { QSquare } from './qsquare.js';
 
 export class QBoard {
-    constructor() {
+    constructor(squareSize) {
         this.squares = new Array(4);
         for (var r = 0; r < 4; r++) {
             this.squares[r] = new Array(4);
             for (var c = 0; c < 4; c++) {
-                this.squares[r][c] = new QSquare(c, r);
+                this.squares[r][c] = new QSquare(c, r, squareSize);
             }
         }
     }
@@ -16,13 +16,12 @@ export class QBoard {
     }
 
     checkGameOver() {
-        if (checkForWin()) {
+        if (this.checkForWin()) {
             return true;
         }
         else {
-            for (var r = 0; r < 3; r++) {
-                this.squares[r] = new Array(4);
-                for (var c; c < 3; c++) {
+            for (var r = 0; r < 4; r++) {
+                for (var c = 0; c < 4; c++) {
                     if (!this.squares[r][c].occupied) {
                         return false;
                     }
@@ -30,5 +29,14 @@ export class QBoard {
             }
         }
         return true;
+    }
+
+    remove() {
+        for (var r = 0; r < 4; r++) {
+            for (var c = 0; c < 4; c++) {
+                this.squares[r][c].remove();
+            }
+        }
+        this.squares = [];
     }
 }

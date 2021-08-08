@@ -11,12 +11,13 @@ export class QSquare extends QInteractive {
         return "col " + this.x + ", row " + this.y;
     }
 
-    constructor(x, y) {
+    constructor(x, y, squareSize) {
         super();
+        super.type = "square";
         this.x = x;
         this.y = y;
-        this.id = this._squareDescriptor();
-        this.occupied = false;
+        super.id = this._squareDescriptor();
+        this.occupant = null;
         
         if (QSquare.scene != null) {
             var geometry = new THREE.BoxGeometry(QSquare.squareSize, 0.2, QSquare.squareSize);
@@ -26,8 +27,8 @@ export class QSquare extends QInteractive {
             }
             var material = new THREE.MeshBasicMaterial( { color: color } );
             this.model = new THREE.Mesh(geometry, material);
-            this.model.position.x = (x-1.5)*QSquare.squareSize;
-            this.model.position.z = (y-1.5)*QSquare.squareSize;
+            this.model.position.x = (x-1.5) * squareSize;
+            this.model.position.z = (y-1.5) * squareSize;
             this.model.userData.qinteractive = this;
             QSquare.scene.add(this.model);
         }
@@ -37,5 +38,17 @@ export class QSquare extends QInteractive {
         if (QSquare.clickCallback != null) {
             QSquare.clickCallback(this);
         }
+    }
+
+    remove() {
+        QSquare.scene.remove(this.model);
+    }
+
+    getModelX() {
+        return this.model.position.x;
+    }
+
+    getModelY() {
+        return this.model.position.z;
     }
 }

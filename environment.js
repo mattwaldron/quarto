@@ -1,19 +1,18 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 // import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js';
 
-import {QPiece, QColor, QDensity, QHeight, QShape} from './qpiece.js';
-import {QBoard} from './qboard.js';
-import {QSquare} from './qsquare.js';
+import { QSquare } from './qsquare.js'
+import { QPiece } from './qpiece.js'
+import { QGame } from './qgame.js';
 
 const frustumSize = 48;
-const squareSize = 5;
 const lightHeight = 20;
-let lightRadius = squareSize*3;
+let lightRadius = 15;
 const messageBarHeight = 50;
 
 let container, messageBar;
 let camera, scene, raycaster, renderer;
-let gameBoard;
+let game;
 
 let newClick = false;
 let lights;
@@ -54,38 +53,6 @@ function adjustLightPosition () {
     }
 }
 
-function initPieces() {
-    QPiece.scene = scene;
-    QPiece.clickCallback = ((qp) => {
-        messageBar.innerText = "saw click on " + qp.id;
-    });
-
-    var pRadius = squareSize*3.5;
-    var pCount = 0;
-    var pStep = 5;
-    for (var h in QHeight) {
-        for (var s in QShape) {
-            for (var d in QDensity) {
-                for (var c in QColor) {
-                    var x = pRadius*Math.cos(2*Math.PI*pCount*pStep/16);
-                    var y = pRadius*Math.sin(2*Math.PI*pCount*pStep/16);
-                    new QPiece(QHeight[h], QShape[s], QDensity[d], QColor[c], x, y);
-                    pCount += 1;
-                }
-            }
-        }
-    }
-}
-
-function initBoard() {
-    QSquare.scene = scene;
-    QSquare.squareSize = squareSize;
-    QSquare.clickCallback = ((qs) => {
-        messageBar.innerText = "saw click on " + qs.id;
-    });
-    gameBoard = new QBoard();
-}
-
 function initCamera() {
     const aspect = window.innerWidth / window.innerHeight;
 
@@ -102,10 +69,14 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xE0E0E0 );
 
-    initCamera();
     initLights();
-    initPieces();
-    initBoard();
+    initCamera();
+    
+    QPiece.scene = scene;
+    QSquare.scene = scene;
+
+    game = new QGame();
+    //game.onClickDelegate = ((qp) => { messageBar.innerText = "saw click on " + qp.id; });
 
     // const axesHelper = new THREE.AxesHelper( 10 );  scene.add( axesHelper );
 
@@ -121,6 +92,7 @@ function init() {
     container.appendChild(messageBar);
 
     document.addEventListener( 'click', onClick );
+    document.addEventListener( 'keypress', onKey );
     window.addEventListener( 'resize', onWindowResize );
 }
 
@@ -144,6 +116,12 @@ function onClick( event ) {
     pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     pointer.y = - ( event.clientY / (window.innerHeight - messageBarHeight) ) * 2 + 1;
     newClick = true;
+}
+
+function onKey( event ) {
+    if (event.code == 'KeyR') {
+        game.reset();
+    }
 }
 
 function render() {
